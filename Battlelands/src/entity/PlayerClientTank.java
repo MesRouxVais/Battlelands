@@ -1,11 +1,6 @@
 package entity;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
-
-import javax.imageio.ImageIO;
 
 import main.KeyHandler;
 import main.MouseHandler;
@@ -13,36 +8,20 @@ import tpcCom.BeholderUDP;
 import utils.AngleUtils;
 import utils.ByteUtils;
 
-/**
- * 
- */
-public class BeholderTank extends Entity{
-	KeyHandler keyHand;
-	MouseHandler mouseHand;
-	byte desiredAdvancementStatus;
+public class PlayerClientTank extends ClientTank{
+	private KeyHandler keyHand;
+	private MouseHandler mouseHand;
 	
-	int sentPacketNumber = 0;
-	byte[] lastSentPacket;
+	private byte desiredAdvancementStatus;
+	private int sentPacketNumber = 0;
+	private byte[] lastSentPacket;
 	
-	
-
-	public BeholderTank(KeyHandler keyHand, MouseHandler mouseHand) {// null null = no this player
+	public PlayerClientTank(int x, int y,KeyHandler keyHand, MouseHandler mouseHand) {
+		super(x, y);
 		this.keyHand = keyHand;
 		this.mouseHand = mouseHand;
-		getBeholderImage();
-		x=800;
-		y=500;
 	}
 	
-	private void getBeholderImage() {
-		try {
-			
-		    neutral = ImageIO.read(Files.newInputStream(Paths.get("./res/tank/KV-2_strip.png")));
-		    turret = ImageIO.read(Files.newInputStream(Paths.get("./res/tank/KV-2_turret.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	@Override
 	public void update() {
@@ -91,29 +70,4 @@ public class BeholderTank extends Entity{
 			//System.out.println(Arrays.toString(sentPacket) + " "+ sentPacketNumber);
 		}
 	}
-	
-	@Override
-	public void packetReception(byte[] bytes) {
-		System.out.println("packetReception  beholder");
-		byte[] tempBytes = {bytes[1],bytes[2]};
-		int tempInt;
-		
-		x= ByteUtils.convertByteToInt(tempBytes);
-		tempBytes[0] = bytes[3];
-		tempBytes[1] = bytes[4];
-		y= ByteUtils.convertByteToInt(tempBytes);
-		
-		tempBytes[0] = bytes[5];
-		tempBytes[1] = bytes[6];
-		
-		tempInt =ByteUtils.convertByteToInt(tempBytes);
-		ActualDirection = ((double)tempInt/(double)65535)*Math.PI*2;
-		
-		tempBytes[0] = bytes[7];
-		tempBytes[1] = bytes[8];
-		
-		tempInt =ByteUtils.convertByteToInt(tempBytes);
-		ActualTurretDirection =  ((double)tempInt/(double)65535)*Math.PI*2;
-	}
-
 }

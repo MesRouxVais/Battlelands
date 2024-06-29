@@ -5,13 +5,13 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 
+import entity.CanReceive;
 import entity.Entity;
-import entity.PlayerTank;
-import entity.RemoteTank;
+import entity.PlayerServerTank;
+import entity.RemotePlayerTank;
 import tpcCom.ServerUDP;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -24,9 +24,10 @@ public class GamePanel extends JPanel implements Runnable{
 	KeyHandler keyHand = new KeyHandler();
 	MouseHandler mouseHand = new MouseHandler(this);
 	Thread gameThread;
-	PlayerTank player; //create player
+	PlayerServerTank player; //create player
 	
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
+	public ArrayList<CanReceive> canReceive = new ArrayList<CanReceive>();
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenOriginalWidth, screenOriginalHeight));
@@ -41,14 +42,15 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	
 	public void createsRemotePlayer() {
-		RemoteTank remoteTank = new RemoteTank();
+		RemotePlayerTank remoteTank = new RemotePlayerTank(800,500);
 		remoteTank.id = 1;
 		entities.add(remoteTank);
+		canReceive.add(remoteTank);
 		
 	}
 	
 	public void startGameThread() {
-		player = new PlayerTank(keyHand,  mouseHand); //create player
+		player = new PlayerServerTank(500, 500,keyHand, mouseHand); //create player
 		player.id = 0;
 		entities.add(player);
 		this.requestFocus();

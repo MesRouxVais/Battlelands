@@ -1,5 +1,6 @@
 package tpcCom;
 
+import entity.CanReceive;
 import entity.Entity;
 import main.BeholderPanel;
 
@@ -18,7 +19,7 @@ public class BeholderUDP {
 		if(receivedBytes.length == 9) {
 			for(Entity entity : beholderPanel.entities) {
 				if(entity.id == receivedBytes[0]) {
-					entity.packetReception(receivedBytes);
+					((CanReceive) entity).packetReception(receivedBytes);
 				}
 			}
 		}

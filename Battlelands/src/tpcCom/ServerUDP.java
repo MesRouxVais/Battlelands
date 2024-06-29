@@ -1,6 +1,7 @@
 package tpcCom;
 
 
+import entity.CanReceive;
 import entity.Entity;
 import main.GamePanel;
 
@@ -23,9 +24,8 @@ public class ServerUDP {
 		//System.out.println("received : " +Arrays.toString(bytes));
 		if(bytes.length == 9) {
 			for(Entity entity : gamePanel.entities) {
-				if(entity.id == 1) {
-					entity.packetReception(bytes);
-					break;
+				if(entity.id == bytes[0]) {
+					((CanReceive) entity).packetReception(bytes);
 				}
 			}
 		}

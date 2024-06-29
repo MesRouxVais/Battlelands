@@ -9,7 +9,7 @@ import audio.Sound;
 import utils.GraphicUtils;
 
 
-public class Entity {
+abstract public class Entity {
 	
 	public float x,y;
 	public float speed, forwardCoefficient, forwardCoefficientStep, turnCoefficient, turnCoefficientStep, turretTurnCoefficient, turretTurnCoefficientStep;
@@ -26,8 +26,34 @@ public class Entity {
 	
 	public int id;
 	
+	
+	
 	//sound
 	Sound engineLoopSound, forwardSound, rotationSound;
+	
+	public Entity(int x,int y) {
+		this.x=x;
+		this.y=y;
+		
+		speed = 2;
+		ActualDirection =0;
+		turnRate=0.01f;
+		turnTolerance=0.02f;
+		
+		forwardCoefficientStep = 0.01f;
+		forwardCoefficient = 0f;
+		
+		turnCoefficientStep = 0.01f;
+		turnCoefficient = 0f;
+		
+		//for turret-----------------------
+		
+		turretTurnCoefficientStep = 0.01f;
+		turretTurnCoefficient = 0f;
+		
+		ActualTurretDirection =0;
+	}
+	
 	protected void applyRotation() {
 		if(Math.abs(desiredDirection - ActualDirection)>turnTolerance) {
 			if(desiredDirection>ActualDirection && Math.toDegrees(desiredDirection-ActualDirection)<180 || Math.toDegrees(desiredDirection-ActualDirection)<-180) {
@@ -71,8 +97,8 @@ public class Entity {
 			
 		}else {turretTurnCoefficient =0;}
 	}
-	public void update() {
-	}
+	
+	public abstract void update();
 	
 	public void draw(Graphics2D g2) {
 		int localx = (int)x-200/2;
@@ -96,10 +122,5 @@ public class Entity {
 		g2.drawString("forCoef  : " + df.format(forwardCoefficient), localx, localy-5);
 		g2.drawString("turnCoef : " + df.format(turnCoefficient), localx, localy-20);
 		g2.drawString("TureCoef : " + df.format(turretTurnCoefficient), localx, localy-35);
-	}
-	
-	//temp
-	public void packetReception(byte[] bytes) {
-		
 	}
 }

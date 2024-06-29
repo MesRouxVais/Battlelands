@@ -8,10 +8,11 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import entity.BeholderTank;
+import entity.CanReceive;
+import entity.ClientTank;
 import entity.Entity;
+import entity.PlayerClientTank;
 import tpcCom.BeholderUDP;
-import tpcCom.ServerUDP;
 
 public class BeholderPanel extends JPanel implements Runnable{
 	
@@ -23,8 +24,9 @@ public class BeholderPanel extends JPanel implements Runnable{
 	MouseHandler mouseHand = new MouseHandler(this);
 	Thread beholderThread;
 	
-	BeholderTank beholderTank; //beholderTank player
+	PlayerClientTank player; //beholderTank player
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
+	public ArrayList<CanReceive> canReceive = new ArrayList<CanReceive>();
 	
 	public BeholderPanel() {
 		this.setPreferredSize(new Dimension(screenOriginalWidth, screenOriginalHeight));
@@ -39,12 +41,13 @@ public class BeholderPanel extends JPanel implements Runnable{
 	}
 	
 	public void startBeholderThread() {
-		beholderTank = new BeholderTank(keyHand,mouseHand);
-		beholderTank.id = 1;
-		entities.add(beholderTank);
-		BeholderTank newbeholderTank = new BeholderTank(null,null);
-		newbeholderTank.id = 0;
-		entities.add(newbeholderTank);
+		player = new PlayerClientTank(800,500,keyHand,mouseHand);
+		player.id = 1;
+		entities.add(player);
+		canReceive.add(player);
+		ClientTank serverPlayerTank = new ClientTank(500,500);
+		serverPlayerTank.id = 0;
+		entities.add(serverPlayerTank);
 		
 		this.requestFocus();
 		beholderThread = new Thread(this,"beholderThread");

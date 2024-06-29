@@ -1,66 +1,27 @@
 package entity;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import javax.imageio.ImageIO;
-
 import audio.Sound;
 import main.KeyHandler;
 import main.MouseHandler;
-import tpcCom.ServerUDP;
 import utils.AngleUtils;
-import utils.ByteUtils;
 
-public class PlayerTank extends Entity{
-	KeyHandler keyHand;
-	MouseHandler mouseHand;
-	
-	public PlayerTank(KeyHandler keyHand,MouseHandler mouseHand) {
+public class PlayerServerTank extends ServerTank{
+
+	private KeyHandler keyHand;
+	private MouseHandler mouseHand;
+
+	public PlayerServerTank(int x, int y,KeyHandler keyHand,MouseHandler mouseHand) {
+		super(x, y);
 		this.keyHand = keyHand;
 		this.mouseHand = mouseHand;
-		DefaultValues();
-		getPlayerImage();
-	}
-	
-	public void DefaultValues() {
-		x=500;
-		y=400;
-		speed = 2;
-		ActualDirection =0;
-		turnRate=0.01f;
-		turnTolerance=0.02f;
 		
-		forwardCoefficientStep = 0.01f;
-		forwardCoefficient = 0f;
-		
-		turnCoefficientStep = 0.01f;
-		turnCoefficient = 0f;
-		
-		//for turret-----------------------
-		
-		turretTurnCoefficientStep = 0.01f;
-		turretTurnCoefficient = 0f;
-		
-		ActualTurretDirection =0;
 		//createSound();
 		forwardSound = new Sound("tracks","res/tankAudio/small_tracks_rattle.wav", -20,-1,20);
 	    rotationSound = new Sound("tracks","res/tankAudio/tank-rotation.wav", -25,-1,20);
 	    engineLoopSound = new Sound("engine loop","res/tankAudio/engine-loop.wav", -10,-1,20);
 	    engineLoopSound.setVolume(1);
 	}
-	
-	public void getPlayerImage() {
-		try {
-			
-		    neutral = ImageIO.read(Files.newInputStream(Paths.get("./res/tank/KV-2_strip.png")));
-		    turret = ImageIO.read(Files.newInputStream(Paths.get("./res/tank/KV-2_turret.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	@Override
 	public void update() {
 		 /*-----------------------------------------------------------------------------------
@@ -129,23 +90,10 @@ public class PlayerTank extends Entity{
 		rotationSound.setVolumeWithSoftening(Math.abs(turnCoefficient),0.02f,turnCoefficientStep*1.5f);
 		
 		try {
-			makeSentPacket();
-		} catch (Exception e) {
+		makeSentPacket();
+		}catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
-	
-	private void makeSentPacket() {
-		byte[] sentPacket = ByteUtils.convertIntToByte(id, 1);
-		sentPacket = ByteUtils.linkArrays(sentPacket, ByteUtils.convertIntToByte((int)x, 2));
-		sentPacket = ByteUtils.linkArrays(sentPacket, ByteUtils.convertIntToByte((int)y, 2));
-		
-		int toIntAngle = (int)((ActualDirection/(2*Math.PI))*(double)65535);
-		sentPacket = ByteUtils.linkArrays(sentPacket, ByteUtils.convertIntToByte(toIntAngle, 2));
-		
-		toIntAngle = (int)((ActualTurretDirection/(2*Math.PI))*(double)65535);
-		sentPacket = ByteUtils.linkArrays(sentPacket, ByteUtils.convertIntToByte(toIntAngle, 2));
-		
-		ServerUDP.serverComThread.sendMessage(sentPacket);
-	}
+
 }
