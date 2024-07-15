@@ -16,7 +16,7 @@ public class BeholderUDP {
 
 	public static void listeningThreadReturn(byte[] receivedBytes) {
 		//System.out.println("received : " + receivedBytes.length +" byte(s)");
-		if(receivedBytes.length == 9) {
+		if(receivedBytes.length == 11) {
 			for(Entity entity : beholderPanel.entities) {
 				if(entity.id == receivedBytes[0]) {
 					((CanReceive) entity).packetReception(receivedBytes);

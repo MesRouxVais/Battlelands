@@ -26,6 +26,18 @@ public class ByteUtils {
 	        return convertInt;
 	}
 	
+	public static int convertByteToInt(byte byteValue) {
+        int convertInt = 0;
+        byte[] tempBytes = {byteValue};
+        // Reconstruction du nombre int
+        convertInt |= (tempBytes[0] & 0xFF);
+        for(int i = 1; i <tempBytes.length; i++) {
+        convertInt |= ((tempBytes[i] & 0xFF) << 8*i);
+        }
+
+        return convertInt;
+}
+	
 	public static byte[] linkArrays(byte[] arrayOne, byte[] arrayTwo) {
 		byte[] returnBytes = new byte[arrayOne.length + arrayTwo.length];
 
@@ -33,22 +45,6 @@ public class ByteUtils {
         System.arraycopy(arrayTwo, 0, returnBytes, arrayOne.length, arrayTwo.length);
 
 		return returnBytes;
-	}
-	
-	public static void main(String[] args) {
-		double angle = Math.toRadians(180);
-		System.out.println(angle);
-		
-		int toIntAngle = (int)((angle/(2*Math.PI))*(double)65535);
-		System.out.println(toIntAngle);
-		System.out.println((angle/(2*Math.PI)) + "   " + (float)toIntAngle/65535);
-		
-		byte[] bytesAngle = ByteUtils.convertIntToByte(toIntAngle, 2);
-		int finalInt =ByteUtils.convertByteToInt(bytesAngle);
-		angle = ((double)finalInt/(double)65535)*Math.PI*2;
-		System.out.println(angle);
-		
-		
 	}
 	
 }

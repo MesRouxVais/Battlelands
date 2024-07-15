@@ -2,13 +2,15 @@ package entity;
 
 import java.util.Arrays;
 
+import main.BeholderPanel;
 import main.KeyHandler;
+import main.Main;
 import main.MouseHandler;
 import tpcCom.BeholderUDP;
 import utils.AngleUtils;
 import utils.ByteUtils;
 
-public class PlayerClientTank extends ClientTank{
+public class PlayerClientTank extends ClientTank implements Camera{
 	private KeyHandler keyHand;
 	private MouseHandler mouseHand;
 	
@@ -16,8 +18,8 @@ public class PlayerClientTank extends ClientTank{
 	private int sentPacketNumber = 0;
 	private byte[] lastSentPacket;
 	
-	public PlayerClientTank(int x, int y,KeyHandler keyHand, MouseHandler mouseHand) {
-		super(x, y);
+	public PlayerClientTank(int x, int y,BeholderPanel beholderPanel, KeyHandler keyHand, MouseHandler mouseHand) {
+		super(x, y, beholderPanel);
 		this.keyHand = keyHand;
 		this.mouseHand = mouseHand;
 	}
@@ -29,14 +31,14 @@ public class PlayerClientTank extends ClientTank{
 		//get desiredDirection
 		if(mouseHand.button1Pressed) {
 			
-			desiredDirection = AngleUtils.getAngleBetweenTwoPoints(y,x,mouseHand.button1LastY,mouseHand.button1LastX);
+			desiredDirection = AngleUtils.getAngleBetweenTwoPoints(y,x,(Main.camera.getCameraY()-Main.window.getHeight()/2)+mouseHand.button1LastY,(Main.camera.getCameraX()-Main.window.getWidth()/2)+mouseHand.button1LastX);
 			//if the player steps back adjust the direction
 			if(keyHand.downPressed) {
 				desiredDirection=AngleUtils.reverseAngle(desiredDirection);
 			}
 		}
 		//get desiredTurretDirection
-		desiredTurretDirection = AngleUtils.getAngleBetweenTwoPoints(y,x,mouseHand.getMouseY(),mouseHand.getMouseX());
+		desiredTurretDirection = AngleUtils.getAngleBetweenTwoPoints(y,x,(Main.camera.getCameraY()-Main.window.getHeight()/2)+mouseHand.getMouseY(),(Main.camera.getCameraX()-Main.window.getWidth()/2)+mouseHand.getMouseX());
 		
 		//desiredAdvancementStatus   1 if forward 0 if null 2 if -forward
 		if(keyHand.upPressed) {
@@ -48,6 +50,9 @@ public class PlayerClientTank extends ClientTank{
 		}
 		makeSentPacket();
 		}
+		
+		forwardSound.setVolume(Math.abs(forwardCoefficient));
+		rotationSound.setVolumeWithSoftening(Math.abs(turnCoefficient),0.02f,turnCoefficientStep*1.5f);
 	}
 	
 	private void makeSentPacket() {
@@ -69,5 +74,19 @@ public class PlayerClientTank extends ClientTank{
 			BeholderUDP.beholderComThread.sendMessage(sentPacket);
 			//System.out.println(Arrays.toString(sentPacket) + " "+ sentPacketNumber);
 		}
+	}
+
+
+	@Override
+	public int getCameraX() {
+		// TODO Auto-generated method stub
+		return (int)x;
+	}
+
+
+	@Override
+	public int getCameraY() {
+		// TODO Auto-generated method stub
+		return (int)y;
 	}
 }

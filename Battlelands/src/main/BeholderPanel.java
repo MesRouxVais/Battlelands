@@ -12,6 +12,7 @@ import entity.CanReceive;
 import entity.ClientTank;
 import entity.Entity;
 import entity.PlayerClientTank;
+import environment.mapDisplay;
 import tpcCom.BeholderUDP;
 
 public class BeholderPanel extends JPanel implements Runnable{
@@ -27,8 +28,9 @@ public class BeholderPanel extends JPanel implements Runnable{
 	PlayerClientTank player; //beholderTank player
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	public ArrayList<CanReceive> canReceive = new ArrayList<CanReceive>();
+	public Entity soundReference;
 	
-	public BeholderPanel() {
+	public BeholderPanel(String serverIp) {
 		this.setPreferredSize(new Dimension(screenOriginalWidth, screenOriginalHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
@@ -37,15 +39,18 @@ public class BeholderPanel extends JPanel implements Runnable{
 		
 		this.setFocusable(true);
 		
-		BeholderUDP beholderUDP = new BeholderUDP(8585, "localhost",this);
+		BeholderUDP beholderUDP = new BeholderUDP(8585, serverIp,this);
 	}
 	
 	public void startBeholderThread() {
-		player = new PlayerClientTank(800,500,keyHand,mouseHand);
+		player = new PlayerClientTank(800,500,this,keyHand,mouseHand);
 		player.id = 1;
 		entities.add(player);
+		soundReference = player;
+		Main.camera = player;
 		canReceive.add(player);
-		ClientTank serverPlayerTank = new ClientTank(500,500);
+		mapDisplay.initiation();
+		ClientTank serverPlayerTank = new ClientTank(500,500,this);
 		serverPlayerTank.id = 0;
 		entities.add(serverPlayerTank);
 		
@@ -83,6 +88,7 @@ public class BeholderPanel extends JPanel implements Runnable{
 		
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
+		mapDisplay.paintMap(g2, Main.camera.getCameraX(), Main.camera.getCameraY());
 		
 		for (Entity entity : entities) {
 			entity.draw(g2);

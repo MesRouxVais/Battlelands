@@ -12,13 +12,16 @@ import java.nio.file.Paths;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import main.KeyHandler;
 import main.Main;
 import main.MouseHandler;
 
 public class HomePanel extends JPanel implements Runnable{
 	GradientButton buttonPlay,buttonMutliplayer,buttonLeave;
+	TextInput textInput;
 	Thread homeThread;
 	MouseHandler mouseHand = new MouseHandler(this);
+	KeyHandler keyHand = new KeyHandler();
 	BufferedImage backgroundImage;
 	
 	public HomePanel() {
@@ -26,11 +29,13 @@ public class HomePanel extends JPanel implements Runnable{
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
 		this.addMouseListener(mouseHand);
+		this.addKeyListener(keyHand);
 		this.setFocusable(true);
 		
 		buttonPlay = new GradientButton("Play");
 		buttonMutliplayer = new GradientButton("Multiplayer");
 		buttonLeave = new GradientButton("Leave");
+		textInput= new TextInput(keyHand);
 		
 		startGameThread();
 		
@@ -74,7 +79,7 @@ public class HomePanel extends JPanel implements Runnable{
 		buttonPlay.updateButtonStade(mouseHand.getMouseX(), mouseHand.getMouseY());
 		buttonMutliplayer.updateButtonStade(mouseHand.getMouseX(), mouseHand.getMouseY());
 		buttonLeave.updateButtonStade(mouseHand.getMouseX(), mouseHand.getMouseY());
-		
+		textInput.updateButtonStade(mouseHand.getMouseX(), mouseHand.getMouseY());
 		
 		if(mouseHand.button1Pressed) {
 			if(buttonPlay.mouseIn) {
@@ -83,9 +88,13 @@ public class HomePanel extends JPanel implements Runnable{
 			}
 			
 			if(buttonMutliplayer.mouseIn){
-				Main.MutliplayerClicked();
+				Main.MutliplayerClicked(textInput.value);
 				homeThread = null;
 			}
+		}
+		
+		if(mouseHand.button1Pressed) {
+			textInput.recalculateOffset = true;
 		}
 	}
 	
@@ -103,6 +112,9 @@ public class HomePanel extends JPanel implements Runnable{
 		
 		buttonLeave.updateButtonGraphics(0.15f, 0.55f, Main.window.getSize(), 0.25f,0.065f);
 		buttonLeave.paintButton(g2);
+		
+		textInput.updateButtonGraphics(0.15f, 0.46f, Main.window.getSize(), 0.25f, 0.030f);
+		textInput.paintButton(g2);
 		
 		g2.dispose();
 

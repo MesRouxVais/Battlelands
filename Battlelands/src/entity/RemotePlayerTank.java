@@ -42,6 +42,7 @@ public class RemotePlayerTank extends ServerTank implements CanReceive{
 		
 		applyTurretRotation();
 		makeSentPacket();
+		updateSound();
 		
 	}
 

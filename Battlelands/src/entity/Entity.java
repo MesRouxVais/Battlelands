@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 import audio.Sound;
+import main.GamePanel;
+import main.Main;
 import utils.GraphicUtils;
 
 
@@ -95,29 +97,38 @@ abstract public class Entity {
 				ActualTurretDirection=ActualTurretDirection-Math.toRadians(360);
 			}
 			
-		}else {turretTurnCoefficient =0;}
+		}else {
+			ActualTurretDirection = (ActualTurretDirection+desiredTurretDirection)/2;//maybe this cause latency
+			turretTurnCoefficient =0;
+		}
 	}
 	
 	public abstract void update();
 	
 	public void draw(Graphics2D g2) {
-		int localx = (int)x-200/2;
-		int localy = (int)y-200/2;
+		
+		float referenceX = Main.camera.getCameraX();
+		float referenceY = Main.camera.getCameraY();
+		int screenMiddleHeight = Main.window.getHeight()/2;
+		int screenMiddleWidth =  Main.window.getWidth()/2;
+		int difX = (int) (x-referenceX);
+		int difY = (int) (y-referenceY);
+		int localx = screenMiddleWidth+difX      -200/2;
+		int localy = screenMiddleHeight+difY      -200/2;
 		
 		
 		
 		g2.drawImage(GraphicUtils.rotate(neutral, ActualDirection+Math.toRadians(270)), localx, localy, 200,200,null);
 		g2.drawImage(GraphicUtils.rotate(turret, ActualTurretDirection+Math.toRadians(270)), localx, localy, 200,200,null);
 		
-		
 		//temp draw
 		DecimalFormat df = new DecimalFormat("##");
 		g2.setColor(Color.white);
-		g2.drawRect((int)x, (int)y, 1, 1);
-		g2.drawString("x : " + df.format(x), (int)x+15, (int)y+95);
-		g2.drawString("y : " + df.format(y), (int)x+60, (int)y+95);
+		g2.drawRect(localx+100, localy+100, 1, 1);
+		g2.drawString("x : " + df.format(x), localx+100+15, localy+100+95);
+		g2.drawString("y : " + df.format(y), localx+100+60, localy+100+95);
 		g2.setColor(Color.red);
-		g2.drawRect((int)x-200/2, (int)y-200/2, 200, 200);
+		g2.drawRect(localx, localy, 200, 200);
 		df = new DecimalFormat("##.##");
 		g2.drawString("forCoef  : " + df.format(forwardCoefficient), localx, localy-5);
 		g2.drawString("turnCoef : " + df.format(turnCoefficient), localx, localy-20);

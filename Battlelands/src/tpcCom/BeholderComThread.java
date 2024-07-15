@@ -20,7 +20,6 @@ public class BeholderComThread implements Runnable{
 			this.peerAddress = InetAddress.getByName(serverName);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		beholderComThread = new Thread(this,"beholderComThread");
 		beholderComThread.start();
@@ -48,12 +47,12 @@ public class BeholderComThread implements Runnable{
 		while(true) {
 			try {
 				
-				byte[] receivedBytes = new byte[9];
+				byte[] receivedBytes = new byte[11];
 				
 				DatagramPacket receivedPacket = new DatagramPacket(receivedBytes, receivedBytes.length);
 				socket.receive(receivedPacket);
 				BeholderUDP.listeningThreadReturn(receivedPacket.getData());
-				
+				System.out.println(receivedPacket.getData().length);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -63,7 +62,6 @@ public class BeholderComThread implements Runnable{
 	}
 	
 	public void sendMessage(byte[] sentBytes){
-		System.out.println(sentBytes.length);
 		try {
 			DatagramPacket sentPacket = new DatagramPacket(sentBytes, sentBytes.length, peerAddress,peerPort);
 			socket.send(sentPacket);
