@@ -105,7 +105,9 @@ public class GamePanel extends JPanel implements Runnable{
 		for (Entity entity : entities) {
 			entity.draw(g2);
 		}
-		mapDisplay.renderBuilding(1000, 800, g2);
+		
+		mapDisplay.paintBuilding(g2);
+		Main.camera.drawUI(g2);
 		//DecimalFormat df = new DecimalFormat("##");
 		//df = new DecimalFormat("##.##");
 		//g2.drawString("FPS : " + df.format(count/((System.nanoTime()-startTime)*Math.pow(10, -9))), 5, 10);

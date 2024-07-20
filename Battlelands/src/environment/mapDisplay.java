@@ -30,7 +30,6 @@ public class mapDisplay {
 	static double 		averageRenderTime;
 	static double 		 averageCount = 0;
 	
-	private static BufferedImage bat, shad;
 	
 	public static void initiation() {
 		try {
@@ -52,12 +51,12 @@ public class mapDisplay {
 			 sidewalk = ImageIO.read(new File("./res/mapFolder/tiles/sidewalk.png"));
 			 road180 = GraphicUtils.rotate(ImageIO.read(new File("./res/mapFolder/tiles/road.png")), Math.PI);
 			 road = ImageIO.read(new File("./res/mapFolder/tiles/road.png"));
-			 bat = ImageIO.read(new File("./res/mapFolder/bat-1.png"));
-			 shad = ImageIO.read(new File("./res/mapFolder/shad-1.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		 
+		 Building.initiationBuildings();
 	}
 	
 	public static void paintMap(Graphics2D g2,int relativeX,int relativeY) {
@@ -127,34 +126,16 @@ public class mapDisplay {
 		g2.drawString("averageRenderTime : "+averageRenderTime + "            averageCount : "+averageCount, 100, 100);
 		*/
 	}
-	
-	
-	public static boolean getEvirecoveredEnvironmentCollisions(Point points[]) {
-		
-		for (int i = 0; i < points.length; i++) {
-			System.out.println("position point n°"+i+" pour x = "+points[i].x+" et y ="+points[i].y);
-			if(CollisionUtils.isInsideSimpleRectangle(points[i].x,points[i].y,100,100,200,200)) return true;
-		}
-		
-		return false;
+	public static void paintBuilding(Graphics2D g2) {
+		Building.renderBuilding(g2);
 	}
 	
-	public static void renderBuilding(int x,int y, Graphics2D g2) {
-		float referenceX = Main.camera.getCameraX();
-		float referenceY = Main.camera.getCameraY();
-		float screenMiddleHeight = Main.window.getHeight()/2;
-		float screenMiddleWidth =  Main.window.getWidth()/2;
-		float difX = x-referenceX;
-		float difY = y-referenceY;
-		int localx = (int)(screenMiddleWidth+difX      -200/2);
-		int localy = (int)(screenMiddleHeight+difY      -200/2);
-		int scaleCoef = 2;
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-		g2.drawImage(shad, localx, localy, shad.getWidth()/scaleCoef,shad.getHeight()/scaleCoef,null);
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
-		g2.drawImage(bat, localx, localy, bat.getWidth()/scaleCoef,bat.getHeight()/scaleCoef,null);
-		g2.setColor(Color.GREEN);
-		g2.drawRect(localx+7, localy+150, 150, 350);
+	
+	public static boolean getEnvironmentCollisions(Point points[],Point normals[],double angle, int originX, int originY) {
+		
+
+		
+		return Building.getBuildingsCollisions(points,normals,angle,originX,originY);
 	}
 
 }

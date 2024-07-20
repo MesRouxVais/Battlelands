@@ -8,7 +8,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 
@@ -180,72 +179,63 @@ public class PlayerServerTank extends ServerTank implements Camera{
 	}
 	
 	public void draw(Graphics2D g2) {
+		super.draw(g2);
+		int screenMiddleHeight = Main.window.getHeight()/2;
+		int screenMiddleWidth =  Main.window.getWidth()/2;
 		
+		//tempcolli
+		g2.setColor(Color.green);
+		Point[] pointsList = new Point[4];
+		Point[] normalPointsList = new Point[4];
+		
+		//----angle points
+		double angleBot = ActualDirection-angleTop;
+		int offsetX = (int)(Math.cos(angleBot)*c);
+		int offsetY = (int)(Math.sin(angleBot)*c);
+		pointsList[0]= new Point((int)x+offsetX,(int)y+offsetY);
+		pointsList[1]= new Point((int)x-offsetX,(int)y-offsetY);
+		angleBot = ActualDirection+angleTop;
+		offsetX = (int)( Math.cos(angleBot)*c);
+		offsetY = (int)(Math.sin(angleBot)*c);
+		pointsList[2]= new Point((int)x+offsetX,(int)y+offsetY);
+		pointsList[3]= new Point((int)x-offsetX,(int)y-offsetY);
+		
+		for (int i = 0; i < pointsList.length; i++) {
+			g2.drawOval(pointsList[i].x-5+screenMiddleWidth-(int)x, pointsList[i].y-5+screenMiddleHeight-(int)y, 10, 10);
+		}
+		//----angle points
+		//----normal points
+		normalPointsList[0]= new Point((int)x+(int)TANK_HALF_WIDTH,(int)y+(int)TANK_HALF_HEIGH);
+		normalPointsList[1]= new Point((int)x+(int)TANK_HALF_WIDTH,(int)y-(int)TANK_HALF_HEIGH);
+		normalPointsList[2]= new Point((int)x-(int)TANK_HALF_WIDTH,(int)y+(int)TANK_HALF_HEIGH);
+		normalPointsList[3]= new Point((int)x-(int)TANK_HALF_WIDTH,(int)y-(int)TANK_HALF_HEIGH);
+		
+		for (int i = 0; i < normalPointsList.length; i++) {
+			g2.drawOval(normalPointsList[i].x-5+screenMiddleWidth-(int)x, normalPointsList[i].y-5+screenMiddleHeight-(int)y, 10, 10);
+		}
+		
+		//----normal points
+		
+		g2.setColor(Color.black);
+		g2.fillRect(110+screenMiddleWidth-6, -110+screenMiddleHeight-6, 12, 12);
+		
+		g2.setColor(Color.red);
+		if(mapDisplay.getEnvironmentCollisions(pointsList, normalPointsList,ActualDirection,(int)x,(int)y)){
+			g2.setColor(Color.GREEN);
+		}
+		g2.fillRect(110+screenMiddleWidth-5, -110+screenMiddleHeight-5, 10, 10);
+		
+	}
+
+	@Override
+	public void drawUI(Graphics2D g2) {
 		float referenceX = Main.camera.getCameraX();
 		float referenceY = Main.camera.getCameraY();
 		int screenMiddleHeight = Main.window.getHeight()/2;
 		int screenMiddleWidth =  Main.window.getWidth()/2;
 		int difX = (int) (x-referenceX);
 		int difY = (int) (y-referenceY);
-		int localx = screenMiddleWidth+difX      -200/2;
-		int localy = screenMiddleHeight+difY      -200/2;
 		
-		
-		
-		g2.drawImage(GraphicUtils.rotate(neutral, ActualDirection+Math.toRadians(270)), localx, localy, 200,200,null);
-		g2.drawImage(GraphicUtils.rotate(turret, ActualTurretDirection+Math.toRadians(270)), localx, localy, 200,200,null);
-		
-		//tempcolli
-		g2.setColor(Color.green);
-		Point[] pointsList = new Point[4];
-		double angleBot = ActualDirection-angleTop;
-		int offsetX = (int)(Math.cos(angleBot)*c);
-		int offsetY = (int)(Math.sin(angleBot)*c);
-		
-		pointsList[0]= new Point((int)x+offsetX,(int)y+offsetY);
-		pointsList[1]= new Point((int)x-offsetX,(int)y-offsetY);
-
-		g2.drawOval(difX+screenMiddleWidth-5+offsetX, difY+screenMiddleHeight-5+offsetY, 10, 10);
-		g2.drawOval(difX+screenMiddleWidth-5-offsetX, difY+screenMiddleHeight-5-offsetY, 10, 10);
-		
-		angleBot = ActualDirection+angleTop;
-		offsetX = (int)( Math.cos(angleBot)*c);
-		offsetY = (int)(Math.sin(angleBot)*c);
-		
-		pointsList[2]= new Point((int)x+offsetX,(int)y+offsetY);
-		pointsList[3]= new Point((int)x-offsetX,(int)y-offsetY);
-		g2.drawOval(difX+screenMiddleWidth-5+offsetX, difY+screenMiddleHeight-5+offsetY, 10, 10);
-		g2.drawOval(difX+screenMiddleWidth-5-offsetX, difY+screenMiddleHeight-5-offsetY, 10, 10);
-		
-		difX = (int) (100-referenceX);
-		difY = (int) (100-referenceY);
-		localx = screenMiddleWidth+difX;
-		localy = screenMiddleHeight+difY;
-		g2.setColor(Color.red);
-		g2.drawRect(localx, localy, 100, 100);
-		//mapDisplay.getEvirecoveredEnvironmentCollisions(pointsList);
-		//tempcolli
-		difX = (int) (x-referenceX);
-		difY = (int) (y-referenceY);
-		localx = screenMiddleWidth+difX      -200/2;
-		localy = screenMiddleHeight+difY      -200/2;
-		//temp draw
-		DecimalFormat df = new DecimalFormat("##");
-		g2.setColor(Color.white);
-		g2.drawRect(localx+100, localy+100, 1, 1);
-		g2.drawString("x : " + df.format(x), localx+100+15, localy+100+95);
-		g2.drawString("y : " + df.format(y), localx+100+60, localy+100+95);
-		g2.setColor(Color.red);
-		if(mapDisplay.getEvirecoveredEnvironmentCollisions(pointsList)){
-			g2.setColor(Color.GREEN);
-		}
-		
-		g2.drawRect(localx, localy, 200, 200);
-		g2.setColor(Color.red);
-		df = new DecimalFormat("##.##");
-		g2.drawString("forCoef  : " + df.format(forwardCoefficient), localx, localy-5);
-		g2.drawString("turnCoef : " + df.format(turnCoefficient), localx, localy-20);
-		g2.drawString("TureCoef : " + df.format(turretTurnCoefficient), localx, localy-35);
 		
 		g2.drawImage(GraphicUtils.rotate(cursor, desiredTurretDirection+Math.toRadians(90)), mouseHand.getMouseX(), mouseHand.getMouseY(), 20,20,null);
 		
@@ -254,6 +244,7 @@ public class PlayerServerTank extends ServerTank implements Camera{
 		
 		int dis = 10+(int) Math.sqrt(Math.pow(x-positionSourisX, 2)+Math.pow(y-positionSourisY, 2));
 		g2.drawImage(GraphicUtils.rotate(turretAngleCursor, ActualTurretDirection+Math.toRadians(90)), (int)(screenMiddleWidth+difX+Math.cos(ActualTurretDirection)*dis), (int)(screenMiddleHeight+difY+Math.sin(ActualTurretDirection)*dis), 20,20,null);
+		
 	}
 
 }

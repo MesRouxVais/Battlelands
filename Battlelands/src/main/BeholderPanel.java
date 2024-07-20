@@ -93,7 +93,8 @@ public class BeholderPanel extends JPanel implements Runnable{
 		for (Entity entity : entities) {
 			entity.draw(g2);
 		}
-		
+		mapDisplay.paintBuilding(g2);
+		Main.camera.drawUI(g2);
 		g2.dispose();
 	}
 	
