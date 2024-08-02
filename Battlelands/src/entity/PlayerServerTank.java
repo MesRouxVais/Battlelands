@@ -33,12 +33,6 @@ public class PlayerServerTank extends ServerTank implements Camera{
 	BufferedImage cursor;
 	BufferedImage turretAngleCursor;
 	
-	//-----------------------------------------------------------------------hit box setting
-	final float  		TANK_HALF_WIDTH = 90;
-	final float  		TANK_HALF_HEIGH = 42;
-	final double 		c = Math.sqrt(Math.pow(TANK_HALF_WIDTH, 2) + Math.pow(TANK_HALF_HEIGH, 2));
-	final double 		angleTop=Math.atan(Math.tan(TANK_HALF_HEIGH/TANK_HALF_WIDTH));
-	//-----------------------------------------------------------------------hit box setting
 	
 	
 	public PlayerServerTank(int x, int y, KeyHandler keyHand,MouseHandler mouseHand) {
