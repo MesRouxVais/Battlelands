@@ -2,10 +2,12 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 import audio.Sound;
+import environment.mapDisplay;
 import main.GamePanel;
 import main.Main;
 import utils.GraphicUtils;
@@ -27,6 +29,13 @@ abstract public class Entity {
 	public float turnTolerance;
 	
 	public int id;
+	
+	//-----------------------------------------------------------------------hit box setting
+		final float  		TANK_HALF_WIDTH = 90;
+		final float  		TANK_HALF_HEIGH = 42;
+		final double 		c = Math.sqrt(Math.pow(TANK_HALF_WIDTH, 2) + Math.pow(TANK_HALF_HEIGH, 2));
+		final double 		angleTop=Math.atan(Math.tan(TANK_HALF_HEIGH/TANK_HALF_WIDTH));
+	//-----------------------------------------------------------------------hit box setting
 	
 	
 	
@@ -76,8 +85,43 @@ abstract public class Entity {
 	}
 	
 	protected void move() {
+		Point[] pointsList = new Point[4];
+		Point[] normalPointsList = new Point[4];
+		
+		float oldX = x;
+		float oldY = y;
 		x += Math.cos(ActualDirection)*speed * forwardCoefficient;
 		y += Math.sin(ActualDirection)*speed * forwardCoefficient;
+		
+		//----angle points
+		double angleBot = ActualDirection-angleTop;
+		int offsetX = (int)(Math.cos(angleBot)*c);
+		int offsetY = (int)(Math.sin(angleBot)*c);
+		pointsList[0]= new Point((int)x+offsetX,(int)y+offsetY);
+		pointsList[1]= new Point((int)x-offsetX,(int)y-offsetY);
+		angleBot = ActualDirection+angleTop;
+		offsetX = (int)( Math.cos(angleBot)*c);
+		offsetY = (int)(Math.sin(angleBot)*c);
+		pointsList[2]= new Point((int)x+offsetX,(int)y+offsetY);
+		pointsList[3]= new Point((int)x-offsetX,(int)y-offsetY);
+
+		//----angle points
+		//----normal points
+		normalPointsList[0]= new Point((int)x+(int)TANK_HALF_WIDTH,(int)y+(int)TANK_HALF_HEIGH);
+		normalPointsList[1]= new Point((int)x+(int)TANK_HALF_WIDTH,(int)y-(int)TANK_HALF_HEIGH);
+		normalPointsList[2]= new Point((int)x-(int)TANK_HALF_WIDTH,(int)y+(int)TANK_HALF_HEIGH);
+		normalPointsList[3]= new Point((int)x-(int)TANK_HALF_WIDTH,(int)y-(int)TANK_HALF_HEIGH);	
+		//----normal points
+		
+		
+		if(mapDisplay.getEnvironmentCollisions(pointsList, normalPointsList,ActualDirection,(int)oldX,(int)oldY)){
+			x = oldX;
+			y = oldY;
+			System.out.println("colli");
+		}
+		
+		//x += Math.cos(ActualDirection)*speed * forwardCoefficient;
+		//y += Math.sin(ActualDirection)*speed * forwardCoefficient;
 	}
 	
 	protected void applyTurretRotation() {
